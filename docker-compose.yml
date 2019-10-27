@@ -4,6 +4,8 @@ services:
   db:
     image: postgres:9-alpine
     container_name: wikijs-postgres
+    networks:
+      - backend
     env_file:
       - .env
     volumes:
@@ -14,6 +16,9 @@ services:
     container_name: wikijs-app
     depends_on:
       - db
+    networks:
+      - frontend
+      - backend
     env_file:
       - .env
 
@@ -22,6 +27,8 @@ services:
     container_name: wikijs-nginx
     depends_on:
       - wiki
+    networks:
+      - frontend
     ports:
       - "80:80"
       - "443:443"
@@ -31,3 +38,7 @@ services:
 
 volumes:
   db-data:
+
+networks:
+  frontend:
+  backend:
