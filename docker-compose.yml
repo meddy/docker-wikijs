@@ -1,40 +1,40 @@
 version: "3"
 services:
 
-  db:
-    image: postgres:9-alpine
+  postgres:
     container_name: wikijs-postgres
-    networks:
-      - backend
+    image: postgres:9
     env_file:
       - .env
+    networks:
+      - backend
     volumes:
       - db-data:/var/lib/postgresql/data
 
   wiki:
-    image: requarks/wiki:beta
     container_name: wikijs-app
+    image: requarks/wiki:beta
     depends_on:
-      - db
+      - postgres
+    env_file:
+      - .env
     networks:
       - frontend
       - backend
-    env_file:
-      - .env
 
   nginx:
-    image: nginx
     container_name: wikijs-nginx
+    image: nginx:1.17
     depends_on:
       - wiki
     networks:
       - frontend
-    ports:
-      - "80:80"
-      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - ./certs:/etc/ssl/private
+    ports:
+      - "80:80"
+      - "443:443"
 
 volumes:
   db-data:
