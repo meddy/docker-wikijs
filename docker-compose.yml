@@ -4,10 +4,8 @@ services:
   db:
     image: postgres:9-alpine
     container_name: wikijs-postgres
-    environment:
-      POSTGRES_DB: wiki
-      POSTGRES_PASSWORD: wikijsrocks
-      POSTGRES_USER: wikijs
+    env_file:
+      - .env
     volumes:
       - db-data:/var/lib/postgresql/data
 
@@ -16,22 +14,17 @@ services:
     container_name: wikijs-app
     depends_on:
       - db
-    environment:
-      DB_TYPE: postgres
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: wikijs
-      DB_PASS: wikijsrocks
-      DB_NAME: wiki
+    env_file:
+      - .env
 
   nginx:
     image: nginx
     container_name: wikijs-nginx
+    depends_on:
+      - wiki
     ports:
       - "80:80"
       - "443:443"
-    depends_on:
-      - wiki
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - ./certs:/etc/ssl/private
